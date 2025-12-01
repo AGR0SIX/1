@@ -358,7 +358,7 @@ const TacticalBoard: React.FC<TacticalBoardProps> = ({ teams, fieldStyle, onFiel
 
   const handleDragStart = (event: React.MouseEvent, teamId: string, playerIndex: number) => {
     event.preventDefault();
-    event.stopPropagation(); // Prevent field drag from interfering
+    event.stopPropagation();
     
     if (!boardRef.current) return;
 
@@ -381,9 +381,9 @@ const TacticalBoard: React.FC<TacticalBoardProps> = ({ teams, fieldStyle, onFiel
   };
 
   const handleDrag = (event: React.MouseEvent) => {
-    if (!dragState.isDragging || dragState.currentPlayer === null || !dragState.teamId) return;
-    // Use throttled drag handler for better performance
-    throttledDragHandler(event);
+    if (dragState.isDragging && dragState.currentPlayer !== null && dragState.teamId) {
+      throttledDragHandler(event);
+    }
   };
 
   const handleDragEnd = () => {
@@ -656,8 +656,11 @@ const TacticalBoard: React.FC<TacticalBoardProps> = ({ teams, fieldStyle, onFiel
           perspectiveOrigin: 'center 60%'
         }}
         onMouseMove={(e) => {
-          handleDrag(e);
-          handleFieldMouseMove(e);
+          if (dragState.isDragging) {
+            handleDrag(e);
+          } else if (fieldDragState.isDragging) {
+            handleFieldMouseMove(e);
+          }
         }}
         onMouseUp={() => {
           handleDragEnd();
@@ -667,7 +670,12 @@ const TacticalBoard: React.FC<TacticalBoardProps> = ({ teams, fieldStyle, onFiel
           handleDragEnd();
           handleFieldMouseUp();
         }}
-        onMouseDown={handleFieldMouseDown}
+        onMouseDown={(e) => {
+          // Only start field drag if not clicking on a player
+          if (!e.target || !(e.target as Element).closest('.player-element')) {
+            handleFieldMouseDown(e);
+          }
+        }}
       >
         <div 
           className="absolute inset-0"

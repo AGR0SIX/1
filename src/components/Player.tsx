@@ -210,6 +210,7 @@ const Player: React.FC<PlayerProps> = ({
       exit={isRemoving ? { scale: 0.5, opacity: 0 } : undefined}
       transition={springTransition}
       onMouseDown={!isEditingNumber ? onDragStart : undefined}
+      onClick={(e) => e.stopPropagation()}
       onDoubleClick={handleNumberDoubleClick}
     >
       <motion.div 
