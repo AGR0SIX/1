@@ -22,14 +22,11 @@ const getDefaultStats = (role: string): PlayerStats => {
   return baseStats[normalizedRole as keyof typeof baseStats] || baseStats.CM;
 };
 export async function fetchPlayerStats(role: string): Promise<PlayerStats> {
-  console.log('fetchPlayerStats called for role:', role);
-  
   // Check if Supabase credentials are available
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
   const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-  
+
   if (!supabaseUrl || !supabaseKey) {
-    console.warn('Supabase credentials not available, using default stats for role:', role);
     return getDefaultStats(role);
   }
 
@@ -37,7 +34,6 @@ export async function fetchPlayerStats(role: string): Promise<PlayerStats> {
     // Test connection first
     const isConnected = await testSupabaseConnection();
     if (!isConnected) {
-      console.warn('Supabase connection failed, using default stats for role:', role);
       return getDefaultStats(role);
     }
 
@@ -82,17 +78,13 @@ export async function fetchPlayerStats(role: string): Promise<PlayerStats> {
         break;
     }
 
-    console.log('Executing query for role:', role);
     const { data, error } = await query.limit(1);
 
     if (error) {
-      console.error('Error fetching player stats:', error);
-      console.warn('Using default stats due to database error for role:', role);
       return getDefaultStats(role);
     }
 
     if (data && data.length > 0) {
-      console.log('Found stats for role:', role, data[0]);
       const stats = data[0];
       return {
         speed: stats.speed,
@@ -108,12 +100,8 @@ export async function fetchPlayerStats(role: string): Promise<PlayerStats> {
       };
     }
 
-    console.warn('No player stats found for role:', role);
-    console.warn('Using default stats for role:', role);
     return getDefaultStats(role);
   } catch (error) {
-    console.error('Network error in fetchPlayerStats:', error);
-    console.warn('Using default stats due to network error for role:', role);
     return getDefaultStats(role);
   }
 }

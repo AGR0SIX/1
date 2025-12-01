@@ -3,13 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Supabase credentials are missing:', {
-    hasUrl: !!supabaseUrl,
-    hasKey: !!supabaseAnonKey,
-    url: supabaseUrl ? `${supabaseUrl.substring(0, 20)}...` : 'missing'
-  });
-}
+// Supabase credentials will be loaded from environment variables
+// The app gracefully falls back to default data if credentials are unavailable
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -17,18 +12,12 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   }
 });
 
-// Test connection function
+// Test connection function - silently checks if Supabase is available
 export async function testSupabaseConnection(): Promise<boolean> {
   try {
     const { data, error } = await supabase.from('player_stats').select('count').limit(1);
-    if (error) {
-      console.error('Supabase connection test failed:', error);
-      return false;
-    }
-    console.log('Supabase connection test successful');
-    return true;
+    return !error;
   } catch (error) {
-    console.error('Supabase connection test error:', error);
     return false;
   }
 }

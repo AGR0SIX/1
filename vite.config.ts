@@ -12,19 +12,11 @@ export default defineConfig({
         manualChunks: {
           'framer-motion': ['framer-motion'],
           'matter-js': ['matter-js'],
-          'openai': ['openai'],
         }
       }
     },
     chunkSizeWarningLimit: 1000,
-    sourcemap: false,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true
-      }
-    }
+    sourcemap: false
   },
   server: {
     watch: {
